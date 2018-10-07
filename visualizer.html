@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+	 crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+	 crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+	 crossorigin="anonymous"></script>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+	 crossorigin="anonymous">
+</head>
+<style>
+	body {
+		font-family: Consolas, 'Courier New', monospace;
+	}
+
+	button {
+		margin-bottom: 25px;
+	}
+
+	#jsonText {
+		width: 100%;
+		height: 300px;
+		margin-bottom: 25px;
+	}
+
+	#errorMessage {
+		display: none;
+	}
+
+	/* Style the buttons that are used to open and close the accordion panel */
+	.accordion {
+		background-color: aliceblue;
+		color: #444;
+		cursor: pointer;
+		padding: 10px;
+		width: 100%;
+		text-align: left;
+		border: 1px solid lightblue;
+		outline: none;
+	}
+
+	/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+	.active,
+	.accordion:hover {
+		background-color: skyblue;
+	}
+
+	/* Style the accordion panel. Note: hidden by default */
+	.panel {
+		width: 100%;
+		padding: 0 0 0 15px;
+		background-color: snow;
+		display: none;
+		overflow: hidden;
+	}
+
+	.keyValue {
+		border: 1px solid skyblue;
+		width: 100%;
+		padding: 0 0 0 15px;
+		background-color: #FAFAFA;
+		padding: 10px;
+	}
+
+	.indented {
+		margin-left: 25px;
+	}
+</style>
+<title>JSON Visualizer</title>
+
+<body>
+	<div class="container-fluid">
+		<h3>Json convert</h3>
+		<textarea id="jsonText"></textarea>
+		<button onclick="parseText()">Process JSON</button>
+		<div id="errorMessage" class="alert alert-danger">
+			<div>Unable to parse JSON:</div>
+			<div id="errorText"></div>
+		</div>
+		<form id="jsonForm">
+			<output name=out></output>
+		</form>
+	</div>
+</body>
+<script>
+	console.log('started');
+	$(document).ready(function () {
+		console.log("ready!");
+		document.addEventListener('click', function (e) {
+			if (e.target.classList.contains('accordion')) {
+				// Toggle between adding and removing the "active" class, to highlight the button that controls the panel
+				e.target.classList.toggle("active");
+				// Toggle between hiding and showing the active panel
+				var panel = e.target.nextElementSibling;
+				if (panel.style.display === "block") {
+					panel.style.display = "none";
+				} else {
+					panel.style.display = "block";
+				}
+			}
+		})
+
+		parseText = function () {
+			$("#errorMessage").hide();
+
+			var data = $('#jsonText').val();
+			var jsonObj;
+
+			try {
+				jsonObj = JSON.parse(data);
+			}
+			catch (err) {
+				$("#errorText").text(err.message);
+				$("#errorMessage").show();
+			}
+
+			var parsedData = parseObject(jsonObj);
+
+			var out = form.out;
+			out.insertAdjacentHTML("beforeend", parsedData);
+		}
+
+		var parseObject = function (obj) {
+			var parsed = '';
+			for (key in obj) {
+				switch (typeof obj[key]) {
+					case 'string':
+					case 'number':
+						parsed += `${div(`${key} -> ${div(obj[key], 'indented')}`, 'keyValue')}`;
+						break;
+					default:
+						parsed += `${accordion(key)}${panel(parseObject(obj[key]))}`;
+				}
+			}
+			return parsed;
+		}
+
+		var div = function (val) { return `<div>${val}</div>`; }
+		var div = function (val, className) { return `<div class="${className}">${val}</div>`; }
+
+		var accordion = function (val) {
+			return div(val, 'accordion');
+		}
+
+		var panel = function (val) {
+			return div(val, 'panel');
+		}
+
+		var form = document.querySelector("form")
+
+		var data;
+
+		console.log('done');
+	});
+</script>
+
+</html>
