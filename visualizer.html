@@ -16,10 +16,6 @@
 	 crossorigin="anonymous">
 </head>
 <style>
-	body {
-		font-family: Consolas, 'Courier New', monospace;
-	}
-
 	button {
 		margin-bottom: 25px;
 	}
@@ -49,7 +45,7 @@
 	/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 	.active,
 	.accordion:hover {
-		background-color: skyblue;
+		background-color: azure;
 	}
 
 	/* Style the accordion panel. Note: hidden by default */
@@ -61,16 +57,19 @@
 		overflow: hidden;
 	}
 
-	.keyValue {
+	.keyName {
 		border: 1px solid skyblue;
 		width: 100%;
 		padding: 0 0 0 15px;
 		background-color: #FAFAFA;
+		color: black;
 		padding: 10px;
 	}
 
-	.indented {
+	.indented.keyValue {
 		margin-left: 25px;
+		font-family: Consolas, 'Courier New', monospace;
+		color: olivedrab;
 	}
 </style>
 <title>JSON Visualizer</title>
@@ -89,10 +88,17 @@
 		</form>
 	</div>
 </body>
+
 <script>
 	console.log('started');
 	$(document).ready(function () {
 		console.log("ready!");
+		/* create HTML elements */
+		var div = function (val) { return `<div>${val}</div>`; }
+		var div = function (val, className) { return `<div class="${className}">${val}</div>`; }
+		var accordion = function (val) { return div(val, 'accordion'); }
+		var panel = function (val) { return div(val, 'panel'); }
+
 		document.addEventListener('click', function (e) {
 			if (e.target.classList.contains('accordion')) {
 				// Toggle between adding and removing the "active" class, to highlight the button that controls the panel
@@ -124,37 +130,25 @@
 			var parsedData = parseObject(jsonObj);
 
 			var out = form.out;
-			out.insertAdjacentHTML("beforeend", parsedData);
+			out.innerHTML = parsedData;
 		}
 
 		var parseObject = function (obj) {
 			var parsed = '';
 			for (key in obj) {
-				switch (typeof obj[key]) {
+				switch (typeof obj[ key ]) {
 					case 'string':
 					case 'number':
-						parsed += `${div(`${key} -> ${div(obj[key], 'indented')}`, 'keyValue')}`;
+						parsed += `${div(`${key} -> ${div(obj[ key ], 'indented keyValue')}`, 'keyName')}`;
 						break;
 					default:
-						parsed += `${accordion(key)}${panel(parseObject(obj[key]))}`;
+						parsed += `${accordion(key)}${panel(parseObject(obj[ key ]))}`;
 				}
 			}
 			return parsed;
 		}
 
-		var div = function (val) { return `<div>${val}</div>`; }
-		var div = function (val, className) { return `<div class="${className}">${val}</div>`; }
-
-		var accordion = function (val) {
-			return div(val, 'accordion');
-		}
-
-		var panel = function (val) {
-			return div(val, 'panel');
-		}
-
 		var form = document.querySelector("form")
-
 		var data;
 
 		console.log('done');
