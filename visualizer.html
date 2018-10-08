@@ -117,21 +117,13 @@
 		/* collapse/expand accordion on click event */
 		document.addEventListener('click', function (e) {
 			if (e.target.classList.contains('accordion')) {
-				// panel for the clicked accordion
-				var panel = e.target.nextElementSibling;
-
-				$(e.target).siblings(sib => sib !== panel && elem.classList.contains('block')).each((i, p) => {
-					p.classList.add('none');
-				});
-
-				// Toggle between adding and removing the "active" class, to highlight the button that controls the panel
+				/*	Toggle between adding and removing the "active" class,
+				to highlight the button that controls the panel */
 				e.target.classList.toggle("active");
 
-				if (e.target.classList.contains('active')) {
-					panel.style.display = "block";
-				} else {
-					panel.style.display = "none";
-				}
+				// panel for the clicked accordion
+				var panel = e.target.nextElementSibling;
+				panel.style.display = (panel.style.display === "block") ? "none" : "block";
 			}
 		})
 
