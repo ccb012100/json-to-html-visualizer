@@ -20,10 +20,15 @@
 		margin-bottom: 25px;
 	}
 
-	#jsonText {
+	output {
+		color:gray;
 		width: 100%;
-		height: 300px;
+	}
+
+	#jsonText {
+		height: 50px;
 		margin-bottom: 25px;
+		width: 100%;
 	}
 
 	#errorMessage {
@@ -44,16 +49,23 @@
 	}
 
 	/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
-	.active,
+	.accordion.active {
+		background-color: #444;
+		border:gray;
+		color:white;
+	}
+
 	.accordion:hover {
-		background-color: azure;
+		background-color: #4444c4;
+		border: 1px solid black;
+		color:white;
 	}
 
 	/* Style the accordion panel. Note: hidden by default */
 	.panel {
 		display: none;
 		overflow: hidden;
-		padding: 0 0 0 15px;
+		padding: 0 0 0 25px;
 		width: 100%;
 	}
 
@@ -67,10 +79,8 @@
 		width: 100%;
 	}
 
-	.indented.keyValue {
-		color: olivedrab;
+	.monospace{
 		font-family: Consolas, 'Courier New', monospace;
-		margin-left: 25px;
 	}
 </style>
 <title>JSON Visualizer</title>
@@ -97,18 +107,31 @@
 		/* create HTML elements */
 		var div = function (val) { return `<div>${val}</div>`; }
 		var div = function (val, className) { return `<div class="${className}">${val}</div>`; }
-		var accordion = function (val) { return div(val, 'accordion'); }
+		var accordion = function (val) { return div(`name: <b class='monospace'>${val}</b><br>value ->`, 'accordion'); }
 		var panel = function (val) { return div(val, 'panel'); }
 
+		var keyValueDiv = function (k, v) {
+			return `${div(`name: <b class='monospace'>${k}</b>${div(`value: <b>${v}</b>`, 'keyValue')}`, `keyName data-toggle="tooltip" title="key : ${k} | value : ${v}"`)}`;
+		}
+
+		/* collapse/expand accordion on click event */
 		document.addEventListener('click', function (e) {
 			if (e.target.classList.contains('accordion')) {
+				// panel for the clicked accordion
+				var panel = e.target.nextElementSibling;
+
+				$(e.target).siblings(sib => sib !== panel && elem.classList.contains('block')).each((i, p) => {
+					p.classList.add('none');
+				});
+
 				// Toggle between adding and removing the "active" class, to highlight the button that controls the panel
 				e.target.classList.toggle("active");
 
-				// Toggle between hiding and showing the active panel
-				var panel = e.target.nextElementSibling;
-
-				panel.style.display = (panel.style.display === "block") ? "none" : "block";
+				if (e.target.classList.contains('active')) {
+					panel.style.display = "block";
+				} else {
+					panel.style.display = "none";
+				}
 			}
 		})
 
@@ -138,11 +161,17 @@
 				switch (typeof obj[ key ]) {
 					case 'string':
 					case 'number':
-						parsed += `${div(`${key} -> ${div(obj[ key ], 'indented keyValue')}`,
-							`keyName data-toggle="tooltip" title="key : ${key} | value : ${obj[ key ]}"`)}`;
+					case 'undefined':
+						parsed += keyValueDiv(key, obj[ key ]);
 						break;
 					default:
-						parsed += `${accordion(key)}${panel(parseObject(obj[ key ]))}`;
+						if ($.isEmptyObject(obj[ key ]))
+							parsed += (Array.isArray(obj[ key ])) ? keyValueDiv(key, '[]') : keyValueDiv(key, '{}');
+						else if (obj[ key ] === null)
+							parsed += keyValueDiv(key, 'null');
+						else
+							parsed += `${accordion(key)}${panel(parseObject(obj[ key ]))}`;
+						break;
 				}
 			}
 			return parsed;
