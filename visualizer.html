@@ -33,13 +33,14 @@
 	/* Style the buttons that are used to open and close the accordion panel */
 	.accordion {
 		background-color: aliceblue;
+		border: 1px solid lightblue;
+		border-radius: .25rem;
 		color: #444;
 		cursor: pointer;
-		padding: 10px;
-		width: 100%;
-		text-align: left;
-		border: 1px solid lightblue;
 		outline: none;
+		padding: 10px;
+		text-align: left;
+		width: 100%;
 	}
 
 	/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
@@ -50,26 +51,26 @@
 
 	/* Style the accordion panel. Note: hidden by default */
 	.panel {
-		width: 100%;
-		padding: 0 0 0 15px;
-		background-color: snow;
 		display: none;
 		overflow: hidden;
+		padding: 0 0 0 15px;
+		width: 100%;
 	}
 
 	.keyName {
-		border: 1px solid skyblue;
-		width: 100%;
-		padding: 0 0 0 15px;
 		background-color: #FAFAFA;
+		border: 1px solid skyblue;
+		border-radius: .25rem;
 		color: black;
+		padding: 0 0 0 15px;
 		padding: 10px;
+		width: 100%;
 	}
 
 	.indented.keyValue {
-		margin-left: 25px;
-		font-family: Consolas, 'Courier New', monospace;
 		color: olivedrab;
+		font-family: Consolas, 'Courier New', monospace;
+		margin-left: 25px;
 	}
 </style>
 <title>JSON Visualizer</title>
@@ -78,7 +79,7 @@
 	<div class="container-fluid">
 		<h3>Json convert</h3>
 		<textarea id="jsonText"></textarea>
-		<button onclick="parseText()">Process JSON</button>
+		<button type="button" class="btn btn-dark" onclick="parseText()">Process JSON</button>
 		<div id="errorMessage" class="alert alert-danger">
 			<div>Unable to parse JSON:</div>
 			<div id="errorText"></div>
@@ -103,13 +104,11 @@
 			if (e.target.classList.contains('accordion')) {
 				// Toggle between adding and removing the "active" class, to highlight the button that controls the panel
 				e.target.classList.toggle("active");
+
 				// Toggle between hiding and showing the active panel
 				var panel = e.target.nextElementSibling;
-				if (panel.style.display === "block") {
-					panel.style.display = "none";
-				} else {
-					panel.style.display = "block";
-				}
+
+				panel.style.display = (panel.style.display === "block") ? "none" : "block";
 			}
 		})
 
@@ -139,7 +138,8 @@
 				switch (typeof obj[ key ]) {
 					case 'string':
 					case 'number':
-						parsed += `${div(`${key} -> ${div(obj[ key ], 'indented keyValue')}`, 'keyName')}`;
+						parsed += `${div(`${key} -> ${div(obj[ key ], 'indented keyValue')}`,
+							`keyName data-toggle="tooltip" title="key : ${key} | value : ${obj[ key ]}"`)}`;
 						break;
 					default:
 						parsed += `${accordion(key)}${panel(parseObject(obj[ key ]))}`;
