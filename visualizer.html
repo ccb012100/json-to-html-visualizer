@@ -7,28 +7,15 @@
 
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
 	 crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-	 crossorigin="anonymous"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-	 crossorigin="anonymous"></script>
-
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
-	 crossorigin="anonymous">
 </head>
 <style>
 	button {
 		margin-bottom: 25px;
 	}
 
-	output {
-		color:gray;
-		width: 100%;
-	}
-
 	#jsonText {
 		height: 50px;
 		margin-bottom: 25px;
-		width: 100%;
 	}
 
 	#errorMessage {
@@ -45,7 +32,6 @@
 		outline: none;
 		padding: 10px;
 		text-align: left;
-		width: 100%;
 	}
 
 	/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
@@ -53,6 +39,12 @@
 		background-color: #444;
 		border:gray;
 		color:white;
+	}
+
+	.panel.active{
+		border: 1px solid gold;
+		border-radius: .25rem;
+		border-top: none;
 	}
 
 	.accordion:hover {
@@ -66,7 +58,6 @@
 		display: none;
 		overflow: hidden;
 		padding: 0 0 0 25px;
-		width: 100%;
 	}
 
 	.keyName {
@@ -76,7 +67,6 @@
 		color: black;
 		padding: 0 0 0 15px;
 		padding: 10px;
-		width: 100%;
 	}
 
 	.monospace{
@@ -86,18 +76,15 @@
 <title>JSON Visualizer</title>
 
 <body>
-	<div class="container-fluid">
-		<h3>Json convert</h3>
-		<textarea id="jsonText"></textarea>
-		<button type="button" class="btn btn-dark" onclick="parseText()">Process JSON</button>
-		<div id="errorMessage" class="alert alert-danger">
-			<div>Unable to parse JSON:</div>
-			<div id="errorText"></div>
-		</div>
-		<form id="jsonForm">
-			<output name=out></output>
-		</form>
+	<h3>Json convert</h3>
+	<textarea id="jsonText"></textarea>
+	<button type="button" onclick="parseText()">Process JSON</button>
+	<div id="errorMessage">
+		<div>Unable to parse JSON:</div>
+		<div id="errorText"></div>
 	</div>
+	<form id="jsonForm">
+	</form>
 </body>
 
 <script>
@@ -111,7 +98,7 @@
 		var panel = function (val) { return div(val, 'panel'); }
 
 		var keyValueDiv = function (k, v) {
-			return `${div(`name: <b class='monospace'>${k}</b>${div(`value: <b>${v}</b>`, 'keyValue')}`, `keyName data-toggle="tooltip" title="key : ${k} | value : ${v}"`)}`;
+			return `${div(`name: <b class='monospace'>${k}</b>${div(`value: <b>${v}</b>`, 'keyValue')}`, `keyName`)}`;
 		}
 
 		/* collapse/expand accordion on click event */
@@ -123,6 +110,7 @@
 
 				// panel for the clicked accordion
 				var panel = e.target.nextElementSibling;
+				panel.classList.toggle("active");
 				panel.style.display = (panel.style.display === "block") ? "none" : "block";
 			}
 		})
@@ -143,34 +131,31 @@
 
 			var parsedData = parseObject(jsonObj);
 
-			var out = form.out;
-			out.innerHTML = parsedData;
+			var form = document.querySelector("form")
+			form.innerHTML = parsedData;
 		}
 
 		var parseObject = function (obj) {
 			var parsed = '';
 			for (key in obj) {
-				switch (typeof obj[ key ]) {
+				switch (typeof obj[key]) {
 					case 'string':
 					case 'number':
 					case 'undefined':
-						parsed += keyValueDiv(key, obj[ key ]);
+						parsed += keyValueDiv(key, obj[key]);
 						break;
 					default:
-						if ($.isEmptyObject(obj[ key ]))
-							parsed += (Array.isArray(obj[ key ])) ? keyValueDiv(key, '[]') : keyValueDiv(key, '{}');
-						else if (obj[ key ] === null)
+						if ($.isEmptyObject(obj[key]))
+							parsed += (Array.isArray(obj[key])) ? keyValueDiv(key, '[]') : keyValueDiv(key, '{}');
+						else if (obj[key] === null)
 							parsed += keyValueDiv(key, 'null');
 						else
-							parsed += `${accordion(key)}${panel(parseObject(obj[ key ]))}`;
+							parsed += `${accordion(key)}${panel(parseObject(obj[key]))}`;
 						break;
 				}
 			}
 			return parsed;
 		}
-
-		var form = document.querySelector("form")
-		var data;
 
 		console.log('done');
 	});
