@@ -19,8 +19,8 @@
 	}
 
 	#errorMessage {
-		background-color: rgba(237, 150, 41, 0.1);
-		border-color: #f93e3e;
+		background-color: rgba(249, 62, 62, .1);
+		border: 1px solid #f93e3e;
 		border-radius: .25rem;
 		display: none;
 		padding: 10px;
@@ -51,10 +51,9 @@
 
 
 	.color4 {
-		border-color: #ebebeb;
-		border: 1px solid;
-  		background-color: hsla(0, 0%, 92%, .1);
-  	}
+		border: 1px solid #61affe;
+		background-color: rgba(97, 175, 254, .1);
+	}
 
 	/* Style the buttons that are used to open and close the accordion panel */
 	.accordion {
@@ -68,12 +67,7 @@
 
 	/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 	.accordion.active {
-		border: 1px solid red;
-	}
-
-	.accordion:hover {
-		background-color: lightyellow;
-		border: 1px solid black;
+		border: oustet;
 	}
 
 	/* Style the accordion panel. Note: hidden by default */
@@ -84,13 +78,13 @@
 		padding: 0 0 0 25px;
 	}
 
-	.panel.active{
-		border-top: none;
-	}
-
 	.keyName {
+		border-color: #ebebeb;
+		border: 1px solid;
+  		background-color: hsla(0, 0%, 92%, .1);
 		border-radius: .25rem;
 		color: black;
+		cursor: default;
 		padding: 0 0 0 15px;
 		padding: 10px;
 	}
@@ -139,7 +133,7 @@
 		}
 
 		var keyValueDiv = function (k, v, i) {
-			return `${div(`name: <b class='monospace'>${k}</b>${div(`value: <b>${v}</b>`, 'keyValue')}`, `keyName color${i}`)}`;
+			return `${div(`name: <b class='monospace'>${k}</b>${div(`value: <b>${v}</b>`, 'keyValue')}`, `keyName`)}`;
 		}
 
 		/* collapse/expand accordion on click event */
