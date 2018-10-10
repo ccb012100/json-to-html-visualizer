@@ -19,13 +19,45 @@
 	}
 
 	#errorMessage {
+		background-color: rgba(237, 150, 41, 0.1);
+		border-color: #f93e3e;
+		border-radius: .25rem;
 		display: none;
+		padding: 10px;
 	}
+
+	.color0 {
+		border-color: #50e3c2;
+		border: 1px solid;
+  		background: rgba(80, 227, 194, .1)
+  	}
+
+	.color1{
+		background-color: rgba(237, 150, 41, 0.1);
+		border: 1px solid #fca130;
+	}
+
+	.color2 {
+		border: 1px solid;
+		border-color: #9012fe;
+ 		background: rgba(144, 18, 254, .1)
+	}
+
+	.color3 {
+		border: 1px solid;
+		border-color: #0d5aa7;
+  		background: rgba(13, 90, 167, .1);
+	}
+
+
+	.color4 {
+		border-color: #ebebeb;
+		border: 1px solid;
+  		background-color: hsla(0, 0%, 92%, .1);
+  	}
 
 	/* Style the buttons that are used to open and close the accordion panel */
 	.accordion {
-		background-color: aliceblue;
-		border: 1px solid lightblue;
 		border-radius: .25rem;
 		color: #444;
 		cursor: pointer;
@@ -36,33 +68,27 @@
 
 	/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
 	.accordion.active {
-		background-color: #444;
-		border:gray;
-		color:white;
-	}
-
-	.panel.active{
-		border: 1px solid gold;
-		border-radius: .25rem;
-		border-top: none;
+		border: 1px solid red;
 	}
 
 	.accordion:hover {
-		background-color: #4444c4;
+		background-color: lightyellow;
 		border: 1px solid black;
-		color:white;
 	}
 
 	/* Style the accordion panel. Note: hidden by default */
 	.panel {
+		border-radius: .25rem;
 		display: none;
 		overflow: hidden;
 		padding: 0 0 0 25px;
 	}
 
+	.panel.active{
+		border-top: none;
+	}
+
 	.keyName {
-		background-color: #FAFAFA;
-		border: 1px solid skyblue;
 		border-radius: .25rem;
 		color: black;
 		padding: 0 0 0 15px;
@@ -81,7 +107,7 @@
 	<button type="button" onclick="parseText()">Process JSON</button>
 	<div id="errorMessage">
 		<div>Unable to parse JSON:</div>
-		<div id="errorText"></div>
+		<pre id="errorText"></pre>
 	</div>
 	<form id="jsonForm">
 	</form>
@@ -92,13 +118,28 @@
 	$(document).ready(function () {
 		console.log("ready!");
 		/* create HTML elements */
-		var div = function (val) { return `<div>${val}</div>`; }
-		var div = function (val, className) { return `<div class="${className}">${val}</div>`; }
-		var accordion = function (val) { return div(`name: <b class='monospace'>${val}</b><br>value ->`, 'accordion'); }
-		var panel = function (val) { return div(val, 'panel'); }
+		var div = function (val) {
+			return `<div>${val}</div>`;
+		}
 
-		var keyValueDiv = function (k, v) {
-			return `${div(`name: <b class='monospace'>${k}</b>${div(`value: <b>${v}</b>`, 'keyValue')}`, `keyName`)}`;
+		var div = function (val, className) {
+			return `<div class="${className}">${val}</div>`;
+		}
+
+		var accordion = function (val, i) {
+			return div(`name: <b class='monospace'>${val}</b><br>value ->`, 'accordion color${i}');
+		}
+
+		var panel = function (val) {
+			return div(val, 'panel');
+		}
+
+		var accordionWithPanel = function (acc, pan, i) {
+			return `<div class="accordion color${i}">name: <b class='monospace'>${acc}</b><br>value ->${panel(pan)}</div>`;
+		}
+
+		var keyValueDiv = function (k, v, i) {
+			return `${div(`name: <b class='monospace'>${k}</b>${div(`value: <b>${v}</b>`, 'keyValue')}`, `keyName color${i}`)}`;
 		}
 
 		/* collapse/expand accordion on click event */
@@ -109,8 +150,7 @@
 				e.target.classList.toggle("active");
 
 				// panel for the clicked accordion
-				var panel = e.target.nextElementSibling;
-				panel.classList.toggle("active");
+				var panel = e.target.getElementsByClassName('panel')[0];
 				panel.style.display = (panel.style.display === "block") ? "none" : "block";
 			}
 		})
@@ -137,26 +177,31 @@
 
 		var parseObject = function (obj) {
 			var parsed = '';
+			let index = 0;
 			for (key in obj) {
 				switch (typeof obj[key]) {
 					case 'string':
 					case 'number':
 					case 'undefined':
-						parsed += keyValueDiv(key, obj[key]);
+						parsed += keyValueDiv(key, obj[key], index);
 						break;
 					default:
 						if ($.isEmptyObject(obj[key]))
-							parsed += (Array.isArray(obj[key])) ? keyValueDiv(key, '[]') : keyValueDiv(key, '{}');
+							parsed +=
+								(Array.isArray(obj[key]))
+									? keyValueDiv(key, '[]', index)
+									: keyValueDiv(key, '{}', index);
 						else if (obj[key] === null)
-							parsed += keyValueDiv(key, 'null');
+							parsed += keyValueDiv(key, 'null', index);
 						else
-							parsed += `${accordion(key)}${panel(parseObject(obj[key]))}`;
+							parsed += accordionWithPanel(key, parseObject(obj[key]), index);
 						break;
 				}
+				index++;
+				index %= 5;
 			}
 			return parsed;
 		}
-
 		console.log('done');
 	});
 </script>
